@@ -45,9 +45,6 @@ public class ProductChangeListener implements MessageListener {
                 case CREATE:
                     handleProductCreation(changeMsg);
                     break;
-                case UPDATE:
-                    handleProductUpdate(changeMsg);
-                    break;
                 case DELETE:
                     handleProductDeletion(changeMsg);
                     break;
@@ -74,28 +71,9 @@ public class ProductChangeListener implements MessageListener {
         }
     }
 
-    private void handleProductUpdate(ProductChangeMessage msg) {
-        ProductDTO product = msg.getProductData();
-        if (product != null) {
-            // Cập nhật L1 cache
-            l1CacheManager.putProduct(product.getId(), product);
-
-            // Cập nhật L2 cache
-            l2CacheManager.putProduct(product.getId(), product);
-
-            log.info("Updated cache for product {} (code: {}) from UPDATE event",
-                    product.getId(), product.getCode());
-        }
-    }
-
     private void handleProductDeletion(ProductChangeMessage msg) {
         Long productId = msg.getProductId();
-
-        // Xóa L1 cache
         l1CacheManager.evictProduct(productId);
-
-        // Xóa L2 cache
-        l2CacheManager.evictProduct(productId);
 
         log.info("Evicted product {} from caches from DELETE event", productId);
     }
