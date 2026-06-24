@@ -1,0 +1,67 @@
+spring:
+  application:
+    name: product-service
+
+  # Database H2
+  datasource:
+    url: jdbc:h2:mem:productdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  # JPA
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+
+  # H2 Console
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  # Redis
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 2000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+
+  # Cache
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000  # 10 minutes
+      cache-null-values: false
+
+# Instance ID cho Pub/Sub
+application:
+  instance-id: ${INSTANCE_ID:${random.uuid}}
+
+# Logging
+logging:
+  level:
+    com.example: DEBUG
+    org.springframework.cache: DEBUG
+    org.springframework.data.redis: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Actuator endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,cache,metrics
+  endpoint:
+    health:
+      show-details: always
